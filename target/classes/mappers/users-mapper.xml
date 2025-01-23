@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="Users">
+	
+    <!-- 
+    existsByUsername : ユーザー名(username)が既に存在するかを確認するクエリ。
+    - 入力: username (String)
+    - 戻り値: true (使用不可) / false (使用可能)
+	-->
+	<select id="existsByUsername" parameterType="String" resultType="Boolean">
+	    SELECT COUNT(*) > 0 FROM users WHERE username = #{username};
+	</select>
+
+	<!-- 
+    existsByEmail : メールアドレス(email)が既に存在するかを確認するクエリ。
+    - 入力: email (String)
+    - 戻り値: true (使用不可) / false (使用可能)
+	-->
+	<select id="existsByEmail" parameterType="String" resultType="Boolean">
+	    SELECT COUNT(*) > 0 FROM users WHERE email = #{email};
+	</select>
+
+	<!-- 
+    save : 新しいユーザーをデータベースに追加するクエリ。
+    - 入力: Users オブジェクト (username, password, email)
+    - 戻り値: 挿入されたレコードの数 (正常に挿入されると 1)
+	-->
+	<insert id="save" parameterType="Users">
+	    INSERT INTO users (username, password, email, created_at)
+	    VALUES (#{username}, #{password}, #{email}, CURRENT_TIMESTAMP);
+	</insert>
+	
+	<!-- 
+	    deleteById : ユーザーIDを指定してデータベースからユーザーを削除するクエリ。
+	    - 入力: id (long型)
+	    - 戻り値: 削除されたレコードの数、(正常に削除されると 1)
+	-->
+	<select id="deleteById" parameterType="long" resultType="Users">
+	    DELETE 
+	    FROM users
+	    WHERE id = #{id};
+	</select>
+	
+	<!-- 
+    findByUsername : ユーザー名(username)を指定してユーザー情報を取得するクエリ。
+    - 入力: username (String型)
+    - 戻り値: 該当するユーザーの情報 (Users オブジェクト)
+	-->
+	<select id="findByUsername" parameterType="String" resultType="Users">
+	    SELECT *
+	    FROM users
+	    WHERE username = #{username};
+	</select>
+	
+	<insert id="saveTest">
+    	INSERT INTO users (username, password, email, created_at)
+		VALUES ('kokoa', '1', 'test@naver.com', CURRENT_TIMESTAMP);
+	</insert>
+	
+</mapper>
+
+
+

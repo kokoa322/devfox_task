@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- タイプエイリアスの定義 -->
+    <typeAliases>
+        <!-- Usersドメインクラスにエイリアス"Users" を設定 -->
+        <typeAlias type="com.example.board.users.domain.Users" alias="Users"></typeAlias>
+        
+        <!-- Boardsドメインクラスにエイリアス"Boards"を設定 -->
+        <typeAlias type="com.example.board.board.domain.Boards" alias="Boards"></typeAlias>
+        
+        <!-- BoardsListResDtoクラスにエイリアス"BoardsListResDto"を設定 -->
+        <typeAlias type="com.example.board.board.dto.res.BoardsListResDto" alias="BoardsListResDto"></typeAlias>
+        
+        <!-- BoardsDetailResDtoクラスにエイリアス "BoardsDetailResDto"を設定 -->
+        <typeAlias type="com.example.board.board.dto.res.BoardsDetailResDto" alias="BoardsDetailResDto"></typeAlias>
+        
+        <!-- Commentsドメインクラスにエイリアス"Comments"を設定 -->
+        <typeAlias type="com.example.board.board.domain.Comments" alias="Comments"></typeAlias>
+    </typeAliases>
+    
+    <!-- マッパーファイルの定義 -->
+    <mappers>
+        <!-- usersに関するSQLマッパーファイル -->
+        <mapper resource="mappers/users-mapper.xml"/>
+        
+        <!-- boardsに関するSQLマッパーファイル -->
+        <mapper resource="mappers/boards-mapper.xml"/>
+        
+        <!-- commentsに関するSQLマッパーファイル -->
+        <mapper resource="mappers/comments-mapper.xml"/>
+    </mappers>
+    
+</configuration>
