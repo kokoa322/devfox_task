@@ -28,29 +28,29 @@ public class CheckSessionAspect {
 	 */
 	 @Around("@annotation(RequireSession)")
 	    public Object RequireSession(ProceedingJoinPoint joinPoint) throws Throwable {
-	        Object[] args = joinPoint.getArgs();
+	        Object[] args = joinPoint.getArgs();//　伝達されたすべてのデータをObject[]配列で返します。
 	        HttpSession session = null;
 	        HttpServletResponse response = null;
 
-	        // HttpSession과 HttpServletResponse를 찾아 저장
+	        //　HttpSessionと HttpServletResponseを探して保持します。
 	        for (Object arg : args) {
-	            if (arg instanceof HttpSession) {
+	            if (arg instanceof HttpSession) {	//　argがHttpSession タイプのオブジェクトであることを確認しながら探します。
 	                session = (HttpSession) arg;
 	            } else if (arg instanceof HttpServletResponse) {
 	                response = (HttpServletResponse) arg;
 	            }
 	        }
 
-	        // session이 null이거나 user가 세션에 없는 경우
+	        // セッションがNullまたはユーザーにセッションがない場合です。
 	        if (session == null || session.getAttribute("user") == null) {
 	            if (response != null) {
-	                response.sendRedirect("/users/signin"); // 리다이렉트 처리
-	                return null; // 리다이렉트 후 메소드 실행을 멈추기 위해 null 반환
+	                response.sendRedirect("/users/signin"); // リダイレクト指定します。
+	                return null; // リダイレクト後、メソッドの実行を止めるためにnullを返します。
 	            }
-	            return "redirect:/users/signin"; // 리다이렉트 문자열 반환
+	            return "redirect:/users/signin"; // リダイレクト指定します。
 	        }
 
-	       //  "user"가 세션에 있으면 모델에 username 추가
+	       //  ユーザーがセッションにある場合、モデルにユーザー名を追加します。
 	        String username = (String) session.getAttribute("user");
 	        for (Object arg : args) {
 	            if (arg instanceof Model) {
@@ -58,7 +58,7 @@ public class CheckSessionAspect {
 	            }
 	        }
 
-	        // 원래의 메소드 실행
+	        // 元のメソッド実行します。
 	        return joinPoint.proceed();
 	    }
 	
@@ -72,27 +72,25 @@ public class CheckSessionAspect {
 	  * @param joinPoint メソッド実行のコンテキスト
 	  * @return メソッドをそのまま実行します。
 	  */
-    @Around("@annotation(CheckSession)") // AddUserToModel 어노테이션이 붙은 메소드에만 적용
+    @Around("@annotation(CheckSession)")
     public Object CheckSessionModel(ProceedingJoinPoint joinPoint) throws Throwable {
-        // joinPoint에서 HttpSession을 직접 받아옴
-        Object[] args = joinPoint.getArgs();
+        Object[] args = joinPoint.getArgs();	//　伝達されたすべてのデータをObject[]配列で返します。
         HttpSession session = null;
 
-        // HttpSession을 메소드 인자에서 찾기
+     //　HttpSessionと HttpServletResponseを探して保持します。
         for (Object arg : args) {
-            if (arg instanceof HttpSession) {
+            if (arg instanceof HttpSession) {	//　argがHttpSession タイプのオブジェクトであることを確認しながら探します。
                 session = (HttpSession) arg;
                 break;
             }
         }
 
-        if (session != null) {
-        	
+        if (session != null) {	//ユーザーがセッションにある場合は。ログを残します。
         	String methodName = joinPoint.getSignature().getName();
         	String username = (String) session.getAttribute("user");
         	if (username != null) { log.info("{} -> {}", username, methodName); }
         	
-            // 모델에 username 추가 (첫 번째 인자가 Model 타입일 때)
+            // モデルにユーザー名を追加します。
             for (Object arg : args) {
                 if (arg instanceof Model && username != null) {
                     ((Model) arg).addAttribute("username", username);
