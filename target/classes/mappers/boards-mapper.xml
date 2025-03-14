@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Boards">
+
+	<resultMap id="BoardsDetailResDtoResultMap" type="BoardsDetailResDto">
+    <id property="board_id" column="board_id"/>
+    <result property="title" column="title"/>
+    <result property="content" column="content"/>
+    <result property="username" column="username"/>
+    <result property="created_at" column="created_at"/>
+    <result property="updated_at" column="updated_at"/>
+    <collection property="comments" ofType="com.example.board.board.domain.Comments">
+        <id property="id" column="comment_id"/>
+        <result property="content" column="comment_content"/>
+        <result property="created_at" column="comment_created_at"/>
+        <association property="users" javaType="com.example.board.users.domain.Users">
+            <id property="id" column="comment_user_id"/>
+            <result property="username" column="comment_username"/>
+            <result property="email" column="comment_email"/>
+        </association>
+    </collection>
+</resultMap>
+
+	<!-- 
+    save: 新しいboardsレコードをデータベースに挿入するクエリ
+    - 入力: Boards型オブジェクト
+        - users.id: ユーザーID
+        - title: ボードのタイトル
+        - content: ボードの内容
+    - 処理: 現在のタイムスタンプで作成日時(created_at)とx更新日時(updated_at)を設定
+    - 戻り値: 挿入したレコードの行数をかえします。
+	-->
+	<insert id="save" parameterType="Boards">
+		<![CDATA[
+	    	INSERT INTO boards (user_id, title, content, created_at, updated_at)
+	    	VALUES (#{users.id}, #{title}, #{content}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+		]]>
+	</insert>
+	
+	<!-- 
+	    updateBoard: 指定されたboardsレコードを更新するクエリ
+	    - 入力: Boards型オブジェクト
+	        - id: ボードのID
+	        - title: ボードの新しいタイトル
+	        - content: ボードの新しい内容
+	    - 処理: 現在のタイムスタンプで更新日時(updated_at)を設定
+	-->
+	<update id="updateBoard" parameterType="Boards">
+	    UPDATE boards
+		SET title = #{title}, content = #{content}, updated_at = CURRENT_TIMESTAMP
+		WHERE id = #{id};
+	</update>
+	
+	<!-- 
+	    findById: 特定のboardsレコードを取得するクエリ
+	    - 入力: id (Long型) - ボードのID
+	    - 処理: ボード情報、関連するユーザー情報、およびコメント情報を取得
+	    - 戻り値: BoardsDetailResDtoResultMap
+	-->
+	<select id="findById" resultMap="BoardsDetailResDtoResultMap" parameterType="Long">
+		<![CDATA[
+			  SELECT 
+		            b.id AS board_id, 
+		            b.title AS title, 
+		            b.content AS content, 
+		            b.created_at AS created_at, 
+		            b.updated_at AS updated_at, 
+		            u.id AS user_id, 
+		            u.username AS username, 
+		            u.email AS email, 
+		            c.id AS comment_id, 
+		            c.content AS comment_content, 
+		            c.created_at AS comment_created_at, 
+		            cu.id AS comment_user_id, 
+		            cu.username AS comment_username, 
+		            cu.email AS comment_email
+		        FROM 
+		            boards b
+		        LEFT JOIN 
+		            users u ON b.user_id = u.id
+		        LEFT JOIN 
+		            comments c ON b.id = c.board_id
+		        LEFT JOIN 
+		            users cu ON c.user_id = cu.id
+		        WHERE 
+		            b.id = #{id}
+		        ORDER BY 
+		            c.created_at DESC; 
+		]]>
+	</select>
+	
+	<!-- 
+	    findByIdComments: 特定のboardsレコードに関連するコメントを取得するクエリ
+	    - 入力:
+	        - board_id: ボードのID
+	        - scale: ページごとのコメント数
+	        - pNum: ページの開始位置
+	    - 処理: コメント情報をページングして取得
+	    - 戻り値: BoardsDetailResDtoResultMap
+	-->
+	<select id="findByIdComments" resultMap="BoardsDetailResDtoResultMap" parameterType="map">
+		<![CDATA[
+			  SELECT 
+		            b.id AS board_id, 
+		            b.title AS title, 
+		            b.content AS content, 
+		            b.created_at AS created_at, 
+		            b.updated_at AS updated_at, 
+		            u.id AS user_id, 
+		            u.username AS username, 
+		            u.email AS email, 
+		            c.id AS comment_id, 
+		            c.content AS comment_content, 
+		            c.created_at AS comment_created_at, 
+		            cu.id AS comment_user_id, 
+		            cu.username AS comment_username, 
+		            cu.email AS comment_email
+		        FROM 
+		            boards b
+		        LEFT JOIN 
+		            users u ON b.user_id = u.id
+		        LEFT JOIN 
+		            comments c ON b.id = c.board_id
+		        LEFT JOIN 
+		            users cu ON c.user_id = cu.id
+		        WHERE 
+		            b.id = #{board_id}
+		        ORDER BY 
+		            c.created_at DESC
+		        LIMIT #{scale} OFFSET #{pNum};
+		]]>
+	</select>
+	
+	<!-- 
+	    findByBoardsIdCommnetsCount: 指定されたboardsレコードに関連するコメント数を取得するクエリ
+	    - 入力: id (ボードID)
+	    - 処理: コメントの数をカウント
+	    - 戻り値: ボードIDに基づいてコメント総数
+	-->
+	<select id="findByBoardsIdCommnetsCount" resultType="int">
+		<![CDATA[
+	    	SELECT COUNT(*) 
+			FROM comments 
+			WHERE board_id = #{id}
+		]]>
+	</select>
+
+
+	
+	<!-- 
+    findBylastInsertedId: 最後に挿入されたデータのIDを取得するクエリ
+    - 入力: なし (Boards型として渡されるが使用されない)
+    - 戻り値: 最後に挿入されたID
+	-->
+	<select id="findBylastInsertedId" parameterType="Boards" resultType="Long">
+		<![CDATA[
+	    	SELECT LAST_INSERT_ID();
+	    ]]>
+	</select>
+
+	<!-- 
+    deleteBoardsById: 指定されたIDの掲示板投稿を削除するクエリ
+    - 入力: id (Long) - 削除対象の投稿ID
+    - 戻り値: 削除された行数
+	-->
+	<delete id="deleteBoardsById" parameterType="Long">
+	    DELETE FROM boards WHERE id = #{id};
+	</delete>
+
+	<!-- 
+	findAll: すべての掲示板リストを取得するクエリ
+	- 入力:
+	- scale: 1ページに表示する投稿数
+	- pNum: ページ番号に基づいて計算された開始オフセット
+	- 戻り値: BoardsListResDto オブジェクトのリスト
+	- b.id: 投稿ID
+	- b.title: 投稿タイトル
+	- b.created_at: 投稿作成日
+	- u.username: 投稿者名
+	-->
+	<select id="findAll" parameterType="map" resultType="BoardsListResDto">
+		<![CDATA[
+	    	SELECT 
+			b.id, 
+			b.title, 
+			b.created_at, 
+			u.username
+			FROM boards AS b
+			INNER JOIN users AS u 
+			ON u.id = b.user_id
+			ORDER BY b.id DESC
+			LIMIT #{scale} OFFSET #{pNum};
+		]]>
+	</select>
+	
+	<!-- <select id="searchFindAll" parameterType="map" resultType="BoardsListResDto">
+		<![CDATA[
+	    	SELECT 
+			    b.id, 
+			    b.title, 
+			    b.created_at, 
+			    u.username
+			FROM boards AS b
+			INNER JOIN users AS u 
+			    ON u.id = b.user_id
+			WHERE 
+			    <choose>
+			        <when test="searchType == 'title'">
+			            b.title LIKE CONCAT('%', #{searchKeyword}, '%')
+			        </when>
+			        <when test="searchType == 'username'">
+			            u.username LIKE CONCAT('%', #{searchKeyword}, '%')
+			        </when>
+			        <when test="searchType == 'content'">
+			            b.content LIKE CONCAT('%', #{searchKeyword}, '%')
+			        </when>
+			        <otherwise>
+			            true
+			        </otherwise>
+			    </choose>
+			ORDER BY b.id DESC
+			LIMIT #{scale} OFFSET #{pNum};
+
+		]]>
+	</select> -->
+	
+	<!-- 
+    searchFindAll : 検索条件に基づいて boards テーブルからデータを取得するクエリ。
+    - 入力: 
+        1. searchType (検索タイプ: 'title', 'username', 'content' のいずれか)
+        2. searchKeyword (検索キーワード)
+        3. scale (1ページあたりの表示件数)
+        4. pNum (ページネーションのオフセット値)
+    - 処理内容:
+        - searchType に応じて title、username、content のいずれかを検索。
+        - 検索結果を作成日時の降順 (b.id DESC) にソート。
+        - ページネーションを適用して結果を制限 (LIMIT と OFFSET)。
+    - 戻り値: BoardsListResDto型のリスト (検索条件に該当するボードのデータ)
+	-->
+	<select id="searchFindAll" parameterType="map" resultType="BoardsListResDto">
+		<![CDATA[
+	    	SELECT 
+			    b.id, 
+			    b.title, 
+			    b.created_at, 
+			    u.username
+			FROM boards AS b
+			INNER JOIN users AS u 
+			    ON u.id = b.user_id
+			WHERE 
+			    CASE 
+		            WHEN #{searchType} = 'title' THEN b.title LIKE CONCAT('%', #{searchKeyword}, '%')
+		            WHEN #{searchType} = 'username' THEN u.username LIKE CONCAT('%', #{searchKeyword}, '%')
+		            WHEN #{searchType} = 'content' THEN b.content LIKE CONCAT('%', #{searchKeyword}, '%')
+		            ELSE TRUE
+		        END
+			ORDER BY b.id DESC
+			LIMIT #{scale} OFFSET #{pNum};
+
+		]]>
+	</select>
+	
+	<select id="findBoardsCount" resultType="int">
+		<![CDATA[
+	    	SELECT COUNT(*) FROM boards;
+		]]>
+	</select>
+	
+	<!-- 
+    findBoardsSearchCount : 検索条件に基づいて、boards テーブル内のレコード数をカウントするクエリ。
+    - 入力: 
+        1. searchType (検索タイプ: 'title', 'username', 'content')
+        2. searchKeyword (検索キーワード)
+    - 処理内容: 
+        - searchType に応じて、title、username、content のいずれかを検索。
+        - その他の場合 (searchType が指定されていない場合)、すべてのレコードをカウント。
+    - 戻り値: 該当するレコードの数 (int型)
+	-->
+	<select id="findBoardsSearchCount" resultType="int" parameterType="map">
+	    <![CDATA[
+	        SELECT COUNT(*) 
+	        FROM boards AS b
+	        INNER JOIN users AS u ON u.id = b.user_id
+	        WHERE 
+	            CASE 
+	                WHEN #{searchType} = 'title' THEN b.title LIKE CONCAT('%', #{searchKeyword}, '%')
+	                WHEN #{searchType} = 'username' THEN u.username LIKE CONCAT('%', #{searchKeyword}, '%')
+	                WHEN #{searchType} = 'content' THEN b.content LIKE CONCAT('%', #{searchKeyword}, '%')
+	                ELSE TRUE
+	            END
+	     ]]>
+	</select>
+
+	
+	<!-- <select id="findBoardsCount" resultType="int" parameterType="map">
+	    <![CDATA[
+	        SELECT COUNT(*) 
+	        FROM boards AS b
+	        INNER JOIN users AS u ON u.id = b.user_id
+	        WHERE 
+	            <choose>
+	                <when test="searchType == 'title'">
+	                    b.title LIKE CONCAT('%', #{searchKeyword}, '%')
+	                </when>
+	                <when test="searchType == 'username'">
+	                    u.username LIKE CONCAT('%', #{searchKeyword}, '%')
+	                </when>
+	                <when test="searchType == 'content'">
+	                    b.content LIKE CONCAT('%', #{searchKeyword}, '%')
+	                </when>
+	                <otherwise>
+	                    1 = 1
+	                </otherwise>
+	            </choose>
+	    ]]>
+	</select> -->
+	
+	<!-- 
+    saveTest : テスト用データをboards テーブルに挿入するクエリ。
+    - 入力: id (int型, データ生成のためのID)
+    - 処理内容: user_idは1に固定し、titleとcontentは動的に生成。
+    - 戻り値: 挿入された行数
+	-->
+	<insert id="saveTest" parameterType="int">
+	    <![CDATA[
+	        INSERT INTO boards (user_id, title, content, created_at, updated_at)
+	        VALUES (1, CONCAT('더미데이터', #{id}), CONCAT('테스트 내용', #{id}), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+	    ]]>
+	</insert>
+	
+	<!-- 
+	saveComment : Comments 테이블에 새로운 댓글을 추가하는クエリ。
+	- 入力: board_id (게시판 ID), user_id (사용자 ID), content (댓글 내용)
+	- 処理内容: 現在のタイムスタンプを作成日(created_at)に設定。
+	- 戻り値: 挿入された行数
+	-->
+	<insert id="saveComment" parameterType="map">
+	    <![CDATA[
+	        INSERT INTO Comments (board_id, user_id, content, created_at)
+	        VALUES (#{board_id}, #{user_id}, #{content}, CURRENT_TIMESTAMP);
+	    ]]>
+	</insert>
+	
+	<!-- 
+	deleteBoardsByUserId : ユーザーIDを指定して、そのユーザーが投稿したすべての掲示板データを削除するクエリ。
+	- 入力: user_id (Long型)
+	- 戻り値: 削除された行数
+	-->
+	<delete id="deleteBoardsByUserId" parameterType="Long">
+	    DELETE FROM boards WHERE user_id = #{id};
+	</delete>
+	
+	<select id="findUserIdByBoardId" resultType="Long" parameterType="Long">
+        SELECT user_id FROM boards WHERE id = #{board_id}
+    </select>
+	
+</mapper>
+
+
+
