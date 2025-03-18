@@ -100,7 +100,8 @@ public class BoardsServiceImpl implements BoardsService {
             String username = (String) data.getUsername();
             String title = (String) data.getTitle();
             LocalDateTime created_at = (LocalDateTime) data.getCreated_at();
-            return new BoardsListResDto(id, username, title, created_at);
+            int comment_count = data.getComment_count();
+            return new BoardsListResDto(id, username, title, created_at, comment_count);
         })
         .collect(Collectors.toList());
 	}
@@ -211,7 +212,8 @@ public class BoardsServiceImpl implements BoardsService {
             String username = (String) data.getUsername();
             String title = (String) data.getTitle();
             LocalDateTime created_at = (LocalDateTime) data.getCreated_at();
-            return new BoardsListResDto(id, username, title, created_at);
+            int comment_count = data.getComment_count();
+            return new BoardsListResDto(id, username, title, created_at, comment_count);
         })
         .collect(Collectors.toList());
 	}

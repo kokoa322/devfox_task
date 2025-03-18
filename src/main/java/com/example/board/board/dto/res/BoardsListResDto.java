@@ -24,12 +24,14 @@ public class BoardsListResDto {
     private String title;
     private LocalDateTime created_at;
     private String formattedCreated_at;
+    private int comment_count;
 
-    public BoardsListResDto(Long id, String username, String title, LocalDateTime created_at) {
+    public BoardsListResDto(Long id, String username, String title, LocalDateTime created_at, int comment_count) {
         this.id = id;
         this.username = username;
         this.title = title;
         this.created_at = created_at;
+        this.comment_count = comment_count;
 
         if (created_at != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");

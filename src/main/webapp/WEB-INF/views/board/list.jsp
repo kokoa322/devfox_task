@@ -216,7 +216,7 @@
                     <c:forEach var="item" items="${items}">
                         <tr>
                             <td><a href="/boards/${item.id}?username=${item.username}" style="text-decoration: none; color: inherit; display: block; text-align: center;">${item.id}</a></td>
-                            <td><a href="/boards/${item.id}?username=${item.username}" style="text-decoration: none; color: inherit; display: block; text-align: center;"">${item.title}</a></td>
+                            <td><a href="/boards/${item.id}?username=${item.username}" style="text-decoration: none; color: inherit; display: block; text-align: center;"">${item.title} (${item.comment_count})</a></td>
                             <td><a href="/boards/${item.id}?username=${item.username}" style="text-decoration: none; color: inherit; display: block; text-align: center;"">${item.username}</a></td>
                             <td><a href="/boards/${item.id}?username=${item.username}" style="text-decoration: none; color: inherit; display: block; text-align: center;"">${item.formattedCreated_at}</a></td>
                         </tr>
