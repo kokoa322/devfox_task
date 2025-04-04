@@ -133,5 +133,7 @@ public interface BoardsDao {
 
 	Long findUserIdByboardId(Long board_id);
 
+	void hits(long board_id);
+
 
 }

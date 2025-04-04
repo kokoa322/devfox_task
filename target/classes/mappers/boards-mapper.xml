@@ -66,6 +66,7 @@
 		            b.content AS content, 
 		            b.created_at AS created_at, 
 		            b.updated_at AS updated_at, 
+		            b.hits AS hits,
 		            u.id AS user_id, 
 		            u.username AS username, 
 		            u.email AS email, 
@@ -362,6 +363,12 @@
 	<select id="findUserIdByBoardId" resultType="Long" parameterType="Long">
         SELECT user_id FROM boards WHERE id = #{board_id}
     </select>
+	
+	<update id="saveHits" parameterType="Long">
+		<![CDATA[
+	    	UPDATE boards SET hits = hits + 1 WHERE id = #{board_id};
+		]]>
+	</update>
 	
 </mapper>
 

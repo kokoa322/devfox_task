@@ -199,4 +199,9 @@ public class BoardsDaoImpl implements BoardsDao{
 		return sqlSession.selectOne("Boards.findUserIdByBoardId", board_id);
 	}
 
+	@Override
+	public void hits(long board_id) {
+		sqlSession.insert("Boards.saveHits", board_id);
+	}
+
 }

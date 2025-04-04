@@ -2,10 +2,15 @@ package com.example.board.board.controller;
 
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
@@ -156,7 +161,48 @@ public class BoardsController {
 	public String detailBoard(
 			@PathVariable("board_id") long board_id, 
 			@RequestParam("username") String username,
-			Model model, HttpSession session) {
+			Model model, HttpSession session,
+			HttpServletRequest request,
+	        HttpServletResponse response) {
+		
+		// 1. 조회수 증가 로직 수행
+	    String cookieName = "viewed_board_ids";
+	    boolean isViewed = false;
+
+	    // 쿠키 확인
+	    Cookie[] cookies = request.getCookies();
+	    if (cookies != null) {
+	        for (Cookie cookie : cookies) {
+	            if (cookieName.equals(cookie.getName())) {
+	                String value = cookie.getValue(); // 예: "1_5_10"
+	                List<String> viewedIds = new ArrayList<>(Arrays.asList(value.split("_")));
+	                if (viewedIds.contains(String.valueOf(board_id))) {
+	                    isViewed = true;
+	                } else {
+	                    viewedIds.add(String.valueOf(board_id));
+	                    String newValue = String.join("_", viewedIds);
+	                    Cookie newCookie = new Cookie(cookieName, newValue);
+	                    newCookie.setPath("/");
+	                    newCookie.setMaxAge(60 * 30); // 30분 유지
+	                    response.addCookie(newCookie);
+	                }
+	                break;
+	            }
+	        }
+	    }
+
+	    // 쿠키가 처음이거나 board_id가 없는 경우 → 새 쿠키 생성
+	    if (cookies == null || !isViewed) {
+	        Cookie newCookie = new Cookie(cookieName, String.valueOf(board_id));
+	        newCookie.setPath("/");
+	        newCookie.setMaxAge(60 * 30); // 30분 유지
+	        response.addCookie(newCookie);
+
+	        // 조회수 증가
+	        boardsService.increaseHits(board_id);
+	    }
+		
+		
 		//　１。
 		BoardsDetailResDto boardsDetailResDto = boardsService.detailBoard(board_id);	//投稿ID基づいて詳細情報を取得します。
 		//　２。

@@ -332,6 +332,11 @@ public class BoardsServiceImpl implements BoardsService {
 		
 		return boardsDao.findUserIdByboardId(board_id);
 	}
+
+	@Override
+	public void increaseHits(long board_id) {
+		boardsDao.hits(board_id);
+	}
 	
 	
 }

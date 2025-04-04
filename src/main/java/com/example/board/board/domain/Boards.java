@@ -47,6 +47,9 @@ public class Boards {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
+    
+    @Column(name = "hits", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Long hits;
 
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime created_at;

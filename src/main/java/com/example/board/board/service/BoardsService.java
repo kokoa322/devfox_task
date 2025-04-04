@@ -130,5 +130,7 @@ public interface BoardsService {
 
 	Long findUserId(Long board_id);
 
+	void increaseHits(long board_id);
+
 	//Page<BoardsListResDto> getBoards(int page, int size);
 }
