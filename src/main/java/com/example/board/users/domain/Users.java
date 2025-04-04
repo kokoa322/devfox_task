@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import com.example.board.board.domain.Boards;
 import com.example.board.board.domain.Comments;
+import com.example.board.likes.domain.Likes;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,4 +52,8 @@ public class Users {
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comments> comments;
+    
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Likes> likedBoards;
+
 }

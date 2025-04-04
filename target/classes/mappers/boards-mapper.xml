@@ -10,6 +10,8 @@
     <result property="username" column="username"/>
     <result property="created_at" column="created_at"/>
     <result property="updated_at" column="updated_at"/>
+    <result property="liked" column="liked"/>
+	<result property="liked_count" column="liked_count"/>
     <collection property="comments" ofType="com.example.board.board.domain.Comments">
         <id property="id" column="comment_id"/>
         <result property="content" column="comment_content"/>
@@ -75,7 +77,8 @@
 		            c.created_at AS comment_created_at, 
 		            cu.id AS comment_user_id, 
 		            cu.username AS comment_username, 
-		            cu.email AS comment_email
+		            cu.email AS comment_email,
+            		(SELECT COUNT (*) FROM likes l WHERE l.board_id = b.id) AS liked_count
 		        FROM 
 		            boards b
 		        LEFT JOIN 
@@ -116,7 +119,8 @@
 		            c.created_at AS comment_created_at, 
 		            cu.id AS comment_user_id, 
 		            cu.username AS comment_username, 
-		            cu.email AS comment_email
+		            cu.email AS comment_email,
+		            (SELECT COUNT (*) FROM likes l WHERE l.board_id = b.id) AS liked_count
 		        FROM 
 		            boards b
 		        LEFT JOIN 
@@ -190,10 +194,10 @@
 			IFNULL((SELECT COUNT(*) 
             	FROM comments 
             	WHERE board_id = b.id
-            	GROUP BY board_id), 0) AS comment_count
+            	GROUP BY board_id), 0) AS comment_count,
+            	(SELECT COUNT (*) FROM likes l WHERE l.board_id = b.id) AS liked_count
 			FROM boards AS b
-			INNER JOIN users AS u 
-			ON u.id = b.user_id
+			INNER JOIN users AS u ON u.id = b.user_id
 			ORDER BY b.id DESC
 			LIMIT #{scale} OFFSET #{pNum};
 		]]>
@@ -253,7 +257,8 @@
 			    IFNULL((SELECT COUNT(*) 
             	FROM comments 
             	WHERE board_id = b.id
-            	GROUP BY board_id), 0) AS comment_count
+            	GROUP BY board_id), 0) AS comment_count,
+            	(SELECT COUNT (*) FROM likes l WHERE l.board_id = b.id) AS liked_count
 			FROM boards AS b
 			INNER JOIN users AS u 
 			    ON u.id = b.user_id

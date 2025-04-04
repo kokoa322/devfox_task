@@ -23,6 +23,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
+import com.example.board.likes.domain.Likes;
 import com.example.board.users.domain.Users;
 
 @Data
@@ -69,4 +70,9 @@ public class Boards {
     public void setUpdated_at() {
         this.updated_at = LocalDateTime.now();
     }
+    
+    @OneToMany(mappedBy = "boards", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Likes> likes;
+    
+
 }

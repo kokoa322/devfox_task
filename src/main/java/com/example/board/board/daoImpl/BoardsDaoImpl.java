@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BoardsDaoImpl implements BoardsDao{
 	
-	
 	private final SqlSessionTemplate sqlSession;
 
 	/**

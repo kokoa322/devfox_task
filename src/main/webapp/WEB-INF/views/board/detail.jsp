@@ -222,8 +222,19 @@ $(document).ready(function() {
             </form>
             <!-- AJAX 삭제 버튼 -->
             <button class="delete-button delete-board-button">삭제</button>
+            
         </div>
+            
     </c:if>
+    <button 
+				    type="button" 
+				    id="likeButton" 
+				    class="like-button" 
+				    data-board-id="${response.board_id}"
+				    onclick="toggleLike(${response.board_id}, ${sessionScope.user_id})">
+				    좋아요
+				</button>
+    <span>${response.liked_count}</span>
 </div>
 <!-- 댓글 목록 -->
 <div class="comments-section">
@@ -251,6 +262,33 @@ $(document).ready(function() {
 </div>
  
 <script>
+
+function toggleLike(board_id, user_id) {
+	
+    $.ajax({
+        type: "POST",
+        url: '/likes?board_id=' + board_id + '&user_id=' + user_id,
+        beforeSend: function() {
+            var sessionId = sessionStorage.getItem('user_id'); // 또는 다른 세션 관련 키 사용
+
+            if (!sessionId) {
+                alert("로그인 후 좋아요를 눌러주세요.");
+                return false; // 요청을 중단합니다.
+            }
+        },
+        success: function (result) {
+            if (result) {
+                location.reload();
+            } else {
+                location.reload();
+            }
+        },
+        error: function (xhr) {
+            alert("요청 실패: " + xhr.responseText);
+        }
+    });
+}
+
 //コメントを投稿する関数
 function submitComment() {
     var formData = $('#commentForm').serialize();// フォームデータをシリアライズ

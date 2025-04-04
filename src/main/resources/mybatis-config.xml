@@ -16,7 +16,8 @@
         <typeAlias type="com.example.board.board.dto.res.BoardsDetailResDto" alias="BoardsDetailResDto"></typeAlias>
         
         <!-- Commentsドメインクラスにエイリアス"Comments"を設定 -->
-        <typeAlias type="com.example.board.board.domain.Comments" alias="Comments"></typeAlias>
+        <typeAlias type="com.example.board.board.domain.Comments" alias="Comments"></typeAlias> 
+        <typeAlias type="com.example.board.likes.domain.Likes" alias="Likes"></typeAlias>
     </typeAliases>
     
     <!-- マッパーファイルの定義 -->
@@ -29,6 +30,7 @@
         
         <!-- commentsに関するSQLマッパーファイル -->
         <mapper resource="mappers/comments-mapper.xml"/>
+        <mapper resource="mappers/likes-mapper.xml"/>
     </mappers>
     
 </configuration>

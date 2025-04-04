@@ -24,4 +24,6 @@ public class BoardsDetailResDto {
 	private LocalDateTime created_at;
 	private LocalDateTime updated_at;
 	private List<Comments> comments;
+	private Long liked_count;
+	private Long liked;
 }

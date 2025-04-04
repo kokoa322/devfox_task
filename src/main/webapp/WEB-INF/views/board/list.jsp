@@ -210,6 +210,7 @@
                         <th style="text-align: center;">제목</th>
                         <th style="text-align: center;">이름</th>
                         <th style="text-align: center;">작성일</th>
+                        <th style="text-align: center;">좋아요</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -219,6 +220,7 @@
                             <td><a href="/boards/${item.id}?username=${item.username}" style="text-decoration: none; color: inherit; display: block; text-align: center;"">${item.title} (${item.comment_count})</a></td>
                             <td><a href="/boards/${item.id}?username=${item.username}" style="text-decoration: none; color: inherit; display: block; text-align: center;"">${item.username}</a></td>
                             <td><a href="/boards/${item.id}?username=${item.username}" style="text-decoration: none; color: inherit; display: block; text-align: center;"">${item.formattedCreated_at}</a></td>
+                            <td><a href="/boards/${item.id}?username=${item.username}" style="text-decoration: none; color: inherit; display: block; text-align: center;"">${item.liked_count}</a></td>
                         </tr>
                     </c:forEach>
                 </tbody>
