@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
         logger.info("관리자에게 알림 전송: {} - {}", subject, message);
     }
 
-	
+    
 	@ExceptionHandler(CJCommunicationsException.class)
     public ResponseEntity<String> handleNetworkError(CJCommunicationsException e) {
         logger.error(DatabaseErrorMessage.NETWORK_OR_DRIVER_ERROR.getMessage() + "{}", e.getMessage(), e);

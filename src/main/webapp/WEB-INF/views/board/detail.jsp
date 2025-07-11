@@ -269,9 +269,7 @@ function toggleLike(board_id, user_id) {
         type: "POST",
         url: '/likes?board_id=' + board_id + '&user_id=' + user_id,
         beforeSend: function() {
-            var sessionId = sessionStorage.getItem('user_id'); // 또는 다른 세션 관련 키 사용
-
-            if (!sessionId) {
+            if (!user_id) {
                 alert("로그인 후 좋아요를 눌러주세요.");
                 return false; // 요청을 중단합니다.
             }

@@ -27,8 +27,9 @@ public class BoardsListResDto {
     private int comment_count;
     private Long liked_count;
 	private Long liked;
+	private Long hits; 
 
-    public BoardsListResDto(Long id, String username, String title, LocalDateTime created_at, int comment_count, Long liked, Long liked_count) {
+    public BoardsListResDto(Long id, String username, String title, LocalDateTime created_at, int comment_count, Long liked, Long liked_count, Long hits) {
         this.id = id;
         this.username = username;
         this.title = title;
@@ -36,6 +37,7 @@ public class BoardsListResDto {
         this.comment_count = comment_count;
         this.liked = liked;
         this.liked_count = liked_count;
+        this.hits = hits;
 
         if (created_at != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");

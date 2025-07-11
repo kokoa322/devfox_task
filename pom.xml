@@ -32,10 +32,6 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
-		
-		
-
-				
 		<!-- AspectJ -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -112,14 +108,63 @@
 			<version>1.2</version>
 		</dependency>
 	
-		<!-- Test -->
+		
+		<!-- JUnit 5 플랫폼 런처 -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.7</version>
-			<scope>test</scope>
+		  <groupId>org.junit.platform</groupId>
+		  <artifactId>junit-platform-launcher</artifactId>
+		  <version>1.10.0</version>
+		  <scope>test</scope>
 		</dependency>
 		
+		<!-- JUnit 5 API -->
+		<dependency>
+		  <groupId>org.junit.jupiter</groupId>
+		  <artifactId>junit-jupiter</artifactId>
+		  <version>5.10.0</version>
+		  <scope>test</scope>
+		</dependency>
+		
+		<!-- JUnit 4 기반 테스트가 있다면 -->
+		<dependency>
+		  <groupId>org.junit.vintage</groupId>
+		  <artifactId>junit-vintage-engine</artifactId>
+		  <version>5.10.0</version>
+		  <scope>test</scope>
+		</dependency>
+		
+		<!-- AssertJ -->
+		<dependency>
+		  <groupId>org.assertj</groupId>
+		  <artifactId>assertj-core</artifactId>
+		  <version>3.25.3</version>
+		  <scope>test</scope>
+		</dependency>
+		
+		<!-- Mockito 최신 버전만 유지 -->
+		<dependency>
+		  <groupId>org.mockito</groupId>
+		  <artifactId>mockito-core</artifactId>
+		  <version>5.10.0</version>
+		  <scope>test</scope>
+		</dependency>
+		
+		<dependency>
+		  <groupId>org.mockito</groupId>
+		  <artifactId>mockito-junit-jupiter</artifactId>
+		  <version>5.10.0</version>
+		  <scope>test</scope>
+		</dependency>
+		
+		
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-test</artifactId>
+		  <version>5.3.31</version>
+		  <scope>test</scope>
+		</dependency>
+
+
 		<!-- 롬복 종속성 추가 -->
 		<dependency>
     		<groupId>org.projectlombok</groupId>
@@ -233,6 +278,7 @@
 		    <artifactId>aspectjweaver</artifactId>
 		    <version>1.9.6</version>  <!-- 최신 버전으로 설정 -->
 		</dependency>
+	    
 	    
 		
 		        

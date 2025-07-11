@@ -96,6 +96,7 @@ public class BoardsServiceImpl implements BoardsService {
 		
 		return boardsDao.findAllBoards(map).stream()
         .map(data -> {
+        	Long hits = (Long)data.getHits();
         	Long liked = (Long)data.getLiked();
         	Long liked_count = (Long)data.getLiked_count();
             Long id = (Long) data.getId();
@@ -103,7 +104,7 @@ public class BoardsServiceImpl implements BoardsService {
             String title = (String) data.getTitle();
             LocalDateTime created_at = (LocalDateTime) data.getCreated_at();
             int comment_count = data.getComment_count();
-            return new BoardsListResDto(id, username, title, created_at, comment_count, liked, liked_count);
+            return new BoardsListResDto(id, username, title, created_at, comment_count, liked, liked_count, hits);
         })
         .collect(Collectors.toList());
 	}
@@ -210,6 +211,7 @@ public class BoardsServiceImpl implements BoardsService {
 		
 		return boardsDao.searchFindAllBoards(map).stream()
         .map(data -> {
+        	Long hits = (Long)data.getHits();
         	Long liked = (Long)data.getLiked();
         	Long liked_count = (Long)data.getLiked_count();
             Long id = (Long) data.getId();
@@ -217,7 +219,7 @@ public class BoardsServiceImpl implements BoardsService {
             String title = (String) data.getTitle();
             LocalDateTime created_at = (LocalDateTime) data.getCreated_at();
             int comment_count = data.getComment_count();
-            return new BoardsListResDto(id, username, title, created_at, comment_count, liked, liked_count);
+            return new BoardsListResDto(id, username, title, created_at, comment_count, liked, liked_count, hits);
         })
         .collect(Collectors.toList());
 	}

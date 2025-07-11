@@ -4,6 +4,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.board.aspect.RequireSession;
+import com.example.board.globalException.SignupValidationException;
+import com.example.board.globalException.SignupValidator;
 import com.example.board.globalUtil.DateTimeFormatterUtil;
 import com.example.board.users.dto.req.DeleteUserReqDto;
 import com.example.board.users.dto.req.SigninReqDto;
@@ -35,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 	private final UsersService usersService;
 	private final DateTimeFormatterUtil dateTimer;
+	private final SignupValidator signupValidator;
 
 	/**
 	 * ログインページを表示するメソッドです。
@@ -164,11 +169,24 @@ public class UserController {
 	 * ジョイン過程です。
 	 * １。ジョインするメソッド呼び出します。
 	 */
+//	@PostMapping("/signup")
+//	@ResponseBody
+//	public ResponseEntity<?> signup(@RequestBody SignupReqDto signupReqDto) {
+//		// １。
+//		return ResponseEntity.ok(usersService.signup(signupReqDto)); //　ジョインするメソッドを呼び出してbollean型でデータを返されてジョイン成功場合はTURE、失敗場合はFALSEです。
+//	}
 	@PostMapping("/signup")
 	@ResponseBody
 	public ResponseEntity<?> signup(@RequestBody SignupReqDto signupReqDto) {
-		// １。
-		return ResponseEntity.ok(usersService.signup(signupReqDto)); //　ジョインするメソッドを呼び出してbollean型でデータを返されてジョイン成功場合はTURE、失敗場合はFALSEです。
+	    try {
+	        boolean result = usersService.signup(signupReqDto);
+	        return ResponseEntity.ok(result); // true
+	    } catch (SignupValidationException e) {
+	    	return ResponseEntity
+	    		    .status(HttpStatus.BAD_REQUEST)
+	    		    .contentType(MediaType.valueOf("text/plain;charset=UTF-8"))
+	    		    .body(e.getMessage());
+	    }
 	}
 	
 	/**

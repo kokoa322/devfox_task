@@ -181,7 +181,7 @@ public class BoardsDaoImpl implements BoardsDao{
 	 * 指定されたボードのコメント数を取得します。
 	 * 
 	 * @param id ボードID
-	 * @return コメントの総件数
+	 * @return コメントの総件数s
 	 */
 	@Override
 	public int findAllCommentsCount(int id) {

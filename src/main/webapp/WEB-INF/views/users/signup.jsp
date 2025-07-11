@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -77,28 +76,30 @@
                 data: JSON.stringify({
                     username: username,
                     password: password,
+                    confirmPassword: confirmPassword,
                     email: email
                 }),
-                success: function(response) {
-                    if (response) {
-                        // 成功時に掲示板ページへリダイレクト
+                success: function (response) {
+                    if (response === true) {
+                        // 회원가입 성공 시 게시판 페이지로 이동
                         window.location.href = '/boards';
                     } else {
-                        // エラー時にアラートを表示
-                        alert('해당 이메일로 이미 가입된 회원이거나 이름이 이미 사용중입니다。'); // "このメールアドレスまたは名前はすでに使用されています。"
+                        // 서버에서 true가 아닌 응답을 줬을 경우 (예외 처리 미사용 로직일 때)
+                        alert('회원가입에 실패했습니다. 다시 시도해주세요。');
                     }
                 },
-                error: function(xhr, error) {
-                    // リクエスト失敗時の処理
-                    if (xhr.status === 500) {
-                        alert('서버 오류: ' + xhr.responseText); 
+                error: function (xhr, error) {
+                    // 서버에서 예외 메시지 응답을 준 경우 (커스텀 예외 처리)
+                    if (xhr.status === 400) {
+                        alert(xhr.responseText);  // 서버에서 보내준 에러 메시지 그대로 표시
                     } else {
-                        alert('회원가입에 실패했습니다. 다시 시도해주세요。'); 
+                        alert('회원가입에 실패했습니다. 다시 시도해주세요。');
                     }
                 }
             });
         });
     });
+    
 </script>
 
 <script>

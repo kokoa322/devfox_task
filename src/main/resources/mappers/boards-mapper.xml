@@ -189,7 +189,8 @@
 	    	SELECT 
 			b.id, 
 			b.title, 
-			b.created_at, 
+			b.created_at,
+			b.hits AS hits, 
 			u.username,
 			IFNULL((SELECT COUNT(*) 
             	FROM comments 
@@ -253,6 +254,7 @@
 			    b.id, 
 			    b.title, 
 			    b.created_at, 
+			    b.hits AS hits,
 			    u.username,
 			    IFNULL((SELECT COUNT(*) 
             	FROM comments 

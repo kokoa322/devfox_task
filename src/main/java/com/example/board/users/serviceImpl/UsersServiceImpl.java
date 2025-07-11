@@ -7,6 +7,8 @@ import javax.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.board.globalException.SignupValidationException;
+import com.example.board.globalException.SignupValidator;
 import com.example.board.globalUtil.DateTimeFormatterUtil;
 import com.example.board.users.dao.UsersDao;
 import com.example.board.users.domain.Users;
@@ -15,7 +17,7 @@ import com.example.board.users.dto.req.SigninReqDto;
 import com.example.board.users.dto.req.SignupReqDto;
 import com.example.board.users.dto.res.SigninResDto;
 import com.example.board.users.service.UsersService;
-import com.example.board.users.util.EmailValidator;
+import com.example.board.users.util.Validator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ public class UsersServiceImpl implements UsersService {
     private final UsersDao usersDao;
     private final PasswordEncoder passwordEncoder;
     private final DateTimeFormatterUtil dateTimer;
+    private final SignupValidator signupValidator;
 
     /**
      * ユーザー名が存在するかどうかを確認するメソッドです。
@@ -74,36 +77,67 @@ public class UsersServiceImpl implements UsersService {
  	 * ３。ユーザー名とメールを中腹検査するメソッド呼び出します。
  	 * ４。すべての条件を満たした場合、データベースにユーザーを登録します。
      */
+//    @Override
+//    @Transactional
+//    public boolean signup(SignupReqDto signupReqDto) {
+//        
+//        boolean userNameAvailable;
+//        boolean emailAvailable;
+//        boolean passwordAvailable;
+//
+//        // １。
+//        String encodedPassword = passwordEncoder.encode(signupReqDto.getPassword()); // パスワードを暗号化し, セキュアな形式で保存します。
+//        Users users = Users.builder()												 //　Usersオブジェクト生成します。
+//                .username(signupReqDto.getUsername())
+//                .password(encodedPassword)
+//                .email(signupReqDto.getEmail())
+//                .build();
+//        // ２。
+//        emailAvailable = Validator.isValidEmail(users.getEmail());				 	//　メール形式を検証するメソッドを呼び出しメールアドレスの形式が正しいか検証します。成功場合はTRUE、失敗場合はFALSE	 
+//        if (emailAvailable) { return false; } 
+//        
+//        // ３。
+//        passwordAvailable = Validator.isValidPassword(users.getPassword());			//　メール形式を検証するメソッドを呼び出しメールアドレスの形式が正しいか検証します。成功場合はTRUE、失敗場合はFALSE
+//        if (emailAvailable) { return false; } 
+//        
+//        
+//        // ４。
+//        userNameAvailable = checkUsername(users.getUsername());						 // メソッドを呼び出して、与えられたユーザー名が既に存在するかを確認し、成功場合はTURE、失敗場合はFALSE
+//        emailAvailable = checkEmail(users.getEmail());								 //　ユーザーメールアドレス中腹検査するメソッドを呼び出し、成功場合はTRUE、失敗場合はFALSE
+//        
+//
+//        // ５。
+//        if (!userNameAvailable && !emailAvailable) {								 // すべての条件を満たした場合、データベースにユーザーを登録します。
+//            Optional<Boolean> result = Optional.ofNullable(usersDao.signup(users) > 0 ? Boolean.TRUE : Boolean.FALSE); //　ユーザーを登録するメソッドを呼び出し、成功場合はTRUE、失敗場合はFALSE
+//            log.info("{}様 会員加入 : {}", users.getUsername(), dateTimer.getCurrentTime()); //　ユーザー登録したログ残します。
+//            return result.orElse(false);
+//        } else {
+//            // 4.
+//            return false;
+//        }
+//    }
+    
     @Override
     @Transactional
     public boolean signup(SignupReqDto signupReqDto) {
-        
-        boolean userNameAvailable;
-        boolean emailAvailable;
+    	
+    	signupValidator.validate(signupReqDto);
+    	
+    	String encodedPassword = passwordEncoder.encode(signupReqDto.getPassword());
 
-        // １。
-        String encodedPassword = passwordEncoder.encode(signupReqDto.getPassword()); // パスワードを暗号化し, セキュアな形式で保存します。
-        Users users = Users.builder()												 //　Usersオブジェクト生成します。
-                .username(signupReqDto.getUsername())
-                .password(encodedPassword)
-                .email(signupReqDto.getEmail())
-                .build();
-        // ２。
-        emailAvailable = EmailValidator.isValidEmail(users.getEmail());				 //　メール形式を検証するメソッドを呼び出しメールアドレスの形式が正しいか検証します。成功場合はTRUE、失敗場合はFALSE	 
-        if (emailAvailable) { return false; } 										
-        // 3.
-        userNameAvailable = checkUsername(users.getUsername());						 // メソッドを呼び出して、与えられたユーザー名が既に存在するかを確認し、成功場合はTURE、失敗場合はFALSE
-        emailAvailable = checkEmail(users.getEmail());								 //　ユーザーメールアドレス中腹検査するメソッドを呼び出し、成功場合はTRUE、失敗場合はFALSE
+        Users users = Users.builder()
+            .username(signupReqDto.getUsername())
+            .password(encodedPassword)
+            .email(signupReqDto.getEmail())
+            .build();
 
-        // 4.
-        if (!userNameAvailable && !emailAvailable) {								 // すべての条件を満たした場合、データベースにユーザーを登録します。
-            Optional<Boolean> result = Optional.ofNullable(usersDao.signup(users) > 0 ? Boolean.TRUE : Boolean.FALSE); //　ユーザーを登録するメソッドを呼び出し、成功場合はTRUE、失敗場合はFALSE
-            log.info("{}様 会員加入 : {}", users.getUsername(), dateTimer.getCurrentTime()); //　ユーザー登録したログ残します。
-            return result.orElse(false);
-        } else {
-            // 4.
-            return false;
+        boolean result = usersDao.signup(users) > 0;
+        if (!result) {
+            throw new SignupValidationException("회원가입 중 오류가 발생했습니다。");
         }
+
+        log.info("{}様 会員加入 : {}", users.getUsername(), dateTimer.getCurrentTime());
+        return true;
     }
 
     /**

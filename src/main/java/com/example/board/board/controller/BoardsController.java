@@ -169,33 +169,37 @@ public class BoardsController {
 	    String cookieName = "viewed_board_ids";
 	    boolean isViewed = false;
 
-	    // 쿠키 확인
+	    // 2. 쿠키 확인
 	    Cookie[] cookies = request.getCookies();
+	    
 	    if (cookies != null) {
 	        for (Cookie cookie : cookies) {
+	        	 // 3. 쿠키 이름이 "viewed_board_ids"인 경우
 	            if (cookieName.equals(cookie.getName())) {
-	                String value = cookie.getValue(); // 예: "1_5_10"
+	                String value = cookie.getValue(); // 해당 쿠키의 값을 가져옴
 	                List<String> viewedIds = new ArrayList<>(Arrays.asList(value.split("_")));
+	               // 4. 해당 게시판 ID가 이미 리스트에 있는지 확인
 	                if (viewedIds.contains(String.valueOf(board_id))) {
 	                    isViewed = true;
 	                } else {
+	                	// 5. 리스트에 없다면, 해당 게시판 ID를 추가하고 새 쿠키 생성
 	                    viewedIds.add(String.valueOf(board_id));
 	                    String newValue = String.join("_", viewedIds);
 	                    Cookie newCookie = new Cookie(cookieName, newValue);
 	                    newCookie.setPath("/");
-	                    newCookie.setMaxAge(60 * 30); // 30분 유지
+	                    newCookie.setMaxAge(60 * 30); 
 	                    response.addCookie(newCookie);
 	                }
-	                break;
+	                break; // 해당 쿠키를 발견했다면 반복문중지
 	            }
 	        }
 	    }
 
-	    // 쿠키가 처음이거나 board_id가 없는 경우 → 새 쿠키 생성
+	    // 6. 쿠키가 없거나 해당 게시판을 조회한적 없다면 쿠키를 생성하고 조회수 증가
 	    if (cookies == null || !isViewed) {
 	        Cookie newCookie = new Cookie(cookieName, String.valueOf(board_id));
 	        newCookie.setPath("/");
-	        newCookie.setMaxAge(60 * 30); // 30분 유지
+	        newCookie.setMaxAge(60 * 30); 
 	        response.addCookie(newCookie);
 
 	        // 조회수 증가
